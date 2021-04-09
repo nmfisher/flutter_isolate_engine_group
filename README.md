@@ -1,16 +1,37 @@
 # engine_group_isolate_test
 
-A new Flutter project.
+This is a reimplementation of the [flutter_isolate](https://github.com/rmawatson/flutter_isolate) Flutter plugin, using FlutterEngineGroup to spawn new isolates.
+
+This is intended to take advantage of the new "lightweight" FlutterEngineGroup implementation that shares resources between multiple FlutterEngines. The hope is that this will halve the overhead of starting a new isolate.
+
+Note that the new FlutterEngineGroup API is not yet available as of Flutter 2.1, so this repository currently offers no advantage over the flutter_isolate plugin.
+
+Once the new API is available, this repository should serve as a basis for a "flutter_isolate 2.0" plugin.
+
+For further details, see https://github.com/flutter/flutter/issues/72009, https://github.com/flutter/flutter/issues/13937#issuecomment-784571153 and https://github.com/flutter/samples/tree/master/add_to_app/multiple_flutters.
+
+Currently only an Android implementation is available. (also there's an issue with threadmerging and PlatformViews (see https://github.com/flutter/flutter/issues/73620) which means this repository is unusable when using the Unity plugin). I'm hoping for a workaround by the time the new FlutterEngineGroup API is available.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+- add this project as plugin in your pubspec.yaml
+- change your AndroidManifest.xml <application> to launch com.example.engine_group_isolate_test.App:
+```
+<application
+        android:name="io.flutter.app.FlutterApplication"
+        ...
+```
 
-A few resources to get you started if this is your first Flutter project:
+and to launch com.example.engine_group_isolate.MainActivity as your activity
+```
+<activity
+            android:name="io.flutter.embedding.android.FlutterActivity"
+            ...
+```
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+- invoke FlutterIsolate.spawn() in the same way you would via the flutter_isolate plugin.
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+See the example project for an actual implementation.
+
+TODO
+- is it possible to spawn a Dart isolate without a FlutterEngine? If your spawned isolate is just doing some background work and communicating via platform channels, why do we need another FlutterEngine?
